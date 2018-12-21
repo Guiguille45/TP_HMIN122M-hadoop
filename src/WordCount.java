@@ -81,6 +81,7 @@ public class WordCount {
 			for (IntWritable val : values)
 				sum += val.get();
 			
+			// EXERCIE 2 - Affichage uniquement si la somme est superieur a 2
 			if (sum > 2)
 				context.write(key, new IntWritable(sum));
 		}
