@@ -51,6 +51,9 @@ public class Join {
 				val = "CUS;" + linecsv[1];
 			} else if (linecsv.length == 9) { // ORDERS
 				cle = linecsv[1];
+				// EXERCICE 5
+//				val = "ORD;" + linecsv[8];
+				// EXERCICE 6
 				val = "ORD;" + linecsv[3];
 			}
 			
@@ -75,7 +78,14 @@ public class Join {
 					orders.add(vals[1]);
 				}
 			}
-			
+			// EXERCICE 5
+/*		    if (!name.equals("")) {
+		        for (String s : orders) {
+		            context.write(new Text(name), new Text(s));
+		        }
+		    }
+*/		    
+			// EXERCICE 6
 			if (!name.equals("")) {
 				double i = 0;
 				for (String s : orders) {
