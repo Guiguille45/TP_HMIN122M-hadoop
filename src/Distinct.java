@@ -18,10 +18,10 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
-public class Join {
-	private static final String INPUT_PATH = "input-join-compact/";
-	private static final String OUTPUT_PATH = "output/join-";
-	private static final Logger LOG = Logger.getLogger(Join.class.getName());
+public class Distinct {
+	private static final String INPUT_PATH = "input-groupBy/";
+	private static final String OUTPUT_PATH = "output/distinct-";
+	private static final Logger LOG = Logger.getLogger(Distinct.class.getName());
 
 	static {
 		System.setProperty("java.util.logging.SimpleFormatter.format", "%5$s%n%6$s");
@@ -40,61 +40,26 @@ public class Join {
 		@Override
 		public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 			String line = value.toString();
-			String[] linecsv = line.split("\\|");
+			String[] linecsv = line.split(",");
 
-			String cle = "", val = "";
-			if (linecsv.length == 8) { // CUSTOMERS
-				cle = linecsv[0];
-				val = "CUS;" + linecsv[1];
-			} else if (linecsv.length == 9) { // ORDERS
-				cle = linecsv[1];
-				// EXERCICE 5
-//				val = "ORD;" + linecsv[8];
-				// EXERCICE 6
-				val = "ORD;" + linecsv[3];
-			}
-			
-			context.write(new Text(cle), new Text(val));
+			// EXERCICE 7
+			int indKey = 6, indVal = 5;
+			context.write(new Text(linecsv[indKey]), new Text(linecsv[indVal]));
 		}
 	}
 	
-	public static class Reduce extends Reducer<Text, Text, Text, Double> {
+	public static class Reduce extends Reducer<Text, Text, Text, Text> {
 		
 		@Override
 		public void reduce(Text key, Iterable<Text> values, Context context)
 				throws IOException, InterruptedException {
-			ArrayList<String> orders = new ArrayList<String>();
+
 			String name = "";
-			
 			for (Text val : values) {
-				String value = val.toString();
-				String[] vals = value.split(";");
-				if (vals[0].equals("CUS")) {
-					name = vals[1];
-				} else if (vals[0].equals("ORD")) {
-					orders.add(vals[1]);
-				}
+				name = val.toString();
 			}
-			// EXERCICE 5
-/*		    if (!name.equals("")) {
-		        for (String s : orders) {
-		            context.write(new Text(name), new Text(s));
-		        }
-		    }
-*/		    
-			// EXERCICE 6
-			if (!name.equals("")) {
-				double i = 0;
-				for (String s : orders) {
-					try {
-						i += Double.parseDouble(s);
-					} catch (NumberFormatException e) {
-						System.out.println(s + " n'est pas un nombre valide");
-					}
-					
-				}
-				context.write(new Text(name), new Double(i));
-			}
+
+			context.write(key, new Text(name));
 		}
 	}
 
